@@ -1,14 +1,28 @@
+/**
+ * @Author: Maximencu Mihai-Ion
+ * @CreatedDate: 13/11/2024
+ *  @Description: WeatherService is an Apex class that fetches weather forecast data for a given location.
+ *  This class integrates with an external weather API to retrieve weather data, including
+ *  temperature, humidity, pressure, and weather conditions for the specified location.
+ */
 public with sharing class WeatherService {
 
+    /**
+    * @Description: This method calls an external weather API to fetch forecast data for tomorrow.
+    * The response data is parsed and mapped to a weatherObj instance, which includes
+    * temperature, humidity, pressure, timezone, city name, and weather conditions.
+    * @param location: The name of the city/location for which to fetch the weather forecast.This is a required parameter and is used to query the weather API.
+     */
     @AuraEnabled(cacheable=true)
     public static weatherObj getWeather(String location) {
-        // Retrieve the custom metadata instance
+        // Use Metadata Operations to extract endpoint and key as Best Practice
         Public_API__mdt weatherMDT = Public_API__mdt.getInstance('Weather_Service');
         String endpoint = weatherMDT.Endpoint__c;
         String apiKey = weatherMDT.Key__c;
 
         Http http = new Http();
         HttpRequest request = new HttpRequest();
+        //Construct the API endpoint using endpoint along with city/location and key provided by external system. User EncodingUtil to ensure string is safe
         request.setEndpoint(endpoint + '?q=' + EncodingUtil.urlEncode(location, 'UTF-8') + '&appid=' + apiKey);
         request.setMethod('GET');
         
@@ -73,12 +87,12 @@ public with sharing class WeatherService {
         }
     }
 
-    // Define the weatherObj class as an inner class
+    // Define the weatherObj class as an inner class (Wrapper Class)
     public class weatherObj {
         @AuraEnabled public String name;
-        @AuraEnabled public String temp;
-        @AuraEnabled public String weatherConditions;
-        @AuraEnabled public String timezone;
+        @AuraEnabled public String temp; //This is saved in Celsius instead of Farenheit (as in payload)
+        @AuraEnabled public String weatherConditions; //Weather description (Clouds, Rain, etc..)
+        @AuraEnabled public String timezone; //This timezone has offset in seconds
         @AuraEnabled public String humidity;
         @AuraEnabled public String pressure;
     }
