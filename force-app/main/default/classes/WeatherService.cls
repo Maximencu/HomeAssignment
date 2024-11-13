@@ -70,7 +70,18 @@ public with sharing class WeatherService {
             System.debug('Tomorrow Forecast ->'  + tomorrowForecast);
             weatherObj weather = new weatherObj();
             weather.name = (String) ((Map<String, Object>) responseData.get('city')).get('name');
-            weather.timezone = String.valueOf(((Map<String, Object>) responseData.get('city')).get('timezone'));
+            //Payload offer timezone as an offset (seconds) and will be formatted to UTC
+            Integer timezoneOffsetSeconds = Integer.valueOf(((Map<String, Object>) responseData.get('city')).get('timezone'));
+            Integer timezoneOffsetHours = timezoneOffsetSeconds / 3600;
+            String timezoneFormatted = '';
+            if(timezoneOffsetHours == 0){
+                timezoneFormatted = 'UTC';
+            } else {
+                String sign = timezoneOffsetHours > 0 ? '+' : '';
+                timezoneFormatted = 'UTC' + sign + timezoneOffsetHours;
+ 
+            }
+            weather.timezone = timezoneFormatted;
 
             // Extract values directly from the "main" section of tomorrowForecast
             weather.humidity = String.valueOf(((Map<String, Object>) tomorrowForecast.get('main')).get('humidity'));
