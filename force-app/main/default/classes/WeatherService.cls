@@ -55,7 +55,7 @@ public with sharing class WeatherService {
                 // Check if dt_txt starts with tomorrow's date and save the date when it reaches 12:00 PM
                 if (dtTxt != null && dtTxt.startsWith(tomorrowString + ' 12:00:00')) {
                     System.debug('Enter condition  ');
-                    System.debug('forecastEntry  ->  ' + forecastEntry);
+                    System.debug('FOUND forecastEntry  needed->  ' + forecastEntry);
                     System.debug('dtTXT ->' + dtTxt);
                     tomorrowForecast = forecastEntry;
                     break;
