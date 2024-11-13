@@ -9,8 +9,8 @@ public with sharing class WeatherService {
 
     /**
     * @Description: This method calls an external weather API to fetch forecast data for tomorrow.
-    * The response data is parsed and mapped to a weatherObj instance, which includes
-    * temperature, humidity, pressure, timezone, city name, and weather conditions.
+     * The response data is parsed and mapped to a weatherObj instance, which includes
+     * temperature, humidity, pressure, timezone, city name, and weather conditions.
     * @param location: The name of the city/location for which to fetch the weather forecast.This is a required parameter and is used to query the weather API.
      */
     @AuraEnabled(cacheable=true)
@@ -32,10 +32,17 @@ public with sharing class WeatherService {
             System.debug('responseData ->' + responseData);
 
             // Get today's date and calculate tomorrow's date in "YYYY-MM-DD" format to match with the one from payload
-            Date tomorrow = Date.today().addDays(1);
-            Datetime tomorrowDatetime = Datetime.newInstance(tomorrow.year(), tomorrow.month(), tomorrow.day());
-            String tomorrowString = tomorrowDatetime.formatGmt('yyyy-MM-dd');
-            System.debug('tomorrowString  -> ' + tomorrowString);
+            Date today = Date.today();
+            System.debug('TODAY ->>> ' + today);
+            // Create a Datetime instance for today at 12:00 PM
+            Datetime todayDT = Datetime.newInstance(today.year(), today.month(), today.day());
+            System.debug('Today Date time (will display yesterday) ->>>> ' + todayDT);
+            // Add 2 days to get tomorrow at 12:00 PM
+            Datetime tomorrowDT = todayDT.addDays(2);
+            System.debug('Tomorrow Date Time ->>>> ' + tomorrowDT);
+            // Format the date portion for comparison with the forecast data
+            String tomorrowString = tomorrowDT.formatGmt('yyyy-MM-dd');
+            System.debug('Tomorrow String -> ' + tomorrowString);
 
             // Find the first forecast entry for tomorrow
             List<Object> forecastList = (List<Object>) responseData.get('list');
@@ -45,8 +52,8 @@ public with sharing class WeatherService {
                 String dtTxt = (String) forecastEntry.get('dt_txt');
                 System.debug('forecastEntry  ->' + forecastEntry);
                 
-                // Check if dt_txt starts with tomorrow's date
-                if (dtTxt != null && dtTxt.startsWith(tomorrowString)) {
+                // Check if dt_txt starts with tomorrow's date and save the date when it reaches 12:00 PM
+                if (dtTxt != null && dtTxt.startsWith(tomorrowString + ' 12:00:00')) {
                     System.debug('Enter condition  ');
                     System.debug('forecastEntry  ->  ' + forecastEntry);
                     System.debug('dtTXT ->' + dtTxt);
