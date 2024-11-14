@@ -108,7 +108,7 @@ public with sharing class WeatherService {
     // Define the weatherObj class as an inner class (Wrapper Class)
     public class weatherObj {
         @AuraEnabled public String name;
-        @AuraEnabled public String temp; //This is saved in Celsius instead of Farenheit (as in payload)
+        @AuraEnabled public String temp; //This is saved in Celsius instead of Kelvin (as in payload)
         @AuraEnabled public String weatherConditions; //Weather description (Clouds, Rain, etc..)
         @AuraEnabled public String timezone; //This timezone has offset in seconds
         @AuraEnabled public String humidity;
